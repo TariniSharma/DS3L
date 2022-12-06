@@ -209,7 +209,7 @@ def main():
     model = build_model()
 
     if(args.dataset=="MNIST"):
-        optimizer = torch.optim.SGD(model.params(), lr=5e-3)
+        optimizer = torch.optim.SGD(model.params(), lr=5e-4)
     else:
         optimizer = torch.optim.Adam(model.params(), lr=3e-4)
 

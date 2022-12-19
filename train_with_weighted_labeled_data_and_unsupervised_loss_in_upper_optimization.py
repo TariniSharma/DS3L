@@ -126,7 +126,6 @@ def bi_train(model, label_loader, unlabeled_loader, val_loader, test_loader, opt
         del grads
 
         #compute upper level objective
-        ssl_loss = ssl_obj(images, out.detach(), model, unlabeled_mask)
         y_g_hat = meta_net(l_images)
         l_g_meta = F.cross_entropy(y_g_hat, l_labels) + ssl_loss[:len(l_labels)].mean()
 
@@ -135,7 +134,8 @@ def bi_train(model, label_loader, unlabeled_loader, val_loader, test_loader, opt
         optimizer_wnet.step()
 
         out = model(images)
-
+        
+        ssl_loss = ssl_obj(images, out.detach(), model, unlabeled_mask)
         cls_loss = F.cross_entropy(out, labels, reduction='none', ignore_index=-1).mean()
         cost_w = torch.reshape(ssl_loss[len(l_labels):], (len(ssl_loss[len(l_labels):]), 1))
         with torch.no_grad():

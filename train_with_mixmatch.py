@@ -136,7 +136,7 @@ def bi_train(model, label_loader, unlabeled_loader, val_loader, test_loader, opt
         meta_net = build_model()
         meta_net.load_state_dict(model.state_dict())
 
-        l_images, u_images, l_labels, u_labels = mixmatch(torch.cat(l_images), torch.cat(l_labels), torch.cat(u_images), meta_net,get_augmenter())
+#         l_images, u_images, l_labels, u_labels = mixmatch(torch.cat(l_images), torch.cat(l_labels), torch.cat(u_images), meta_net,get_augmenter())
 
         # cat labeled and unlabeled data
         labels = torch.cat([l_labels, u_labels], 0)

@@ -116,9 +116,9 @@ def bi_train(model, label_loader, unlabeled_loader, val_loader, test_loader, opt
 
         cls_loss = F.cross_entropy(out, labels, reduction='none', ignore_index=-1).mean()
         if norm != 0:
-            loss_hat = coef_labeled*cls_loss + coef * (torch.sum(cost_w * weight) / norm + ssl_loss[:len(l_labels)].mean())
+            loss_hat = (1-coef)*cls_loss + coef * (torch.sum(cost_w * weight) / norm + ssl_loss[:len(l_labels)].mean())
         else:
-            loss_hat = coef_labeled*cls_loss + coef * (torch.sum(cost_w * weight) + ssl_loss[:len(l_labels)].mean())
+            loss_hat = (1-coef)*cls_loss + coef * (torch.sum(cost_w * weight) + ssl_loss[:len(l_labels)].mean())
 
         meta_net.zero_grad()
         grads = torch.autograd.grad(loss_hat, (meta_net.params()), create_graph=True)
@@ -154,7 +154,7 @@ def bi_train(model, label_loader, unlabeled_loader, val_loader, test_loader, opt
         if iteration == 1 or (iteration % 1000) == 0:
             time_cost = time.time() - t
             print("iteration [{}/{}] cls loss : {:.6e},  time : {:.3f} sec/iter, lr : {}, coef: {}, coef_labeled: {}".format(
-                iteration, args.iterations, loss.item(),  time_cost / 100, optimizer.param_groups[0]["lr"], coef, coef_labeled))
+                iteration, args.iterations, loss.item(),  time_cost / 100, optimizer.param_groups[0]["lr"], coef, 1-coef))
             t = time.time()
 
         if (iteration % 10000) == 0 or iteration == args.iterations:

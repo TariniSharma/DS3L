@@ -143,9 +143,9 @@ def bi_train(model, label_loader, unlabeled_loader, val_loader, test_loader, opt
             norm = torch.sum(weight)
 
         if norm != 0:
-            loss = coef_labeled*cls_loss + coef * (torch.sum(cost_w * weight) / norm + ssl_loss[:len(l_labels)].mean())
+            loss = (1-coef)*cls_loss + coef * (torch.sum(cost_w * weight) / norm + ssl_loss[:len(l_labels)].mean())
         else:
-            loss = coef_labeled*cls_loss + coef * (torch.sum(cost_w * weight) + ssl_loss[:len(l_labels)].mean())
+            loss = (1-coef)*cls_loss + coef * (torch.sum(cost_w * weight) + ssl_loss[:len(l_labels)].mean())
 
         optimizer.zero_grad()
         loss.backward()

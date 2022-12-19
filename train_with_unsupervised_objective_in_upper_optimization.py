@@ -123,10 +123,11 @@ def bi_train(model, label_loader, unlabeled_loader, val_loader, test_loader, opt
         grads = torch.autograd.grad(loss_hat, (meta_net.params()), create_graph=True)
         meta_net.update_params(lr_inner=args.meta_lr, source_params=grads)
         del grads
-
+        
+        ssl_loss = ssl_obj(images, out.detach(), model, unlabeled_mask)
         #compute upper level objective
         y_g_hat = meta_net(l_images)
-        l_g_meta = F.cross_entropy(y_g_hat, l_labels)
+        l_g_meta = F.cross_entropy(y_g_hat, l_labels) + ssl_loss[:len(l_labels)].mean())
 
         optimizer_wnet.zero_grad()
         l_g_meta.backward()
@@ -134,7 +135,6 @@ def bi_train(model, label_loader, unlabeled_loader, val_loader, test_loader, opt
 
         out = model(images)
 
-        ssl_loss = ssl_obj(images, out.detach(), model, unlabeled_mask)
         cls_loss = F.cross_entropy(out, labels, reduction='none', ignore_index=-1).mean()
         cost_w = torch.reshape(ssl_loss[len(l_labels):], (len(ssl_loss[len(l_labels):]), 1))
         with torch.no_grad():

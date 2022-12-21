@@ -237,7 +237,7 @@ def main():
 
 
     model = build_model()
-
+    model.load_state_dict(torch.load(args.model_name))
     if(args.dataset=="MNIST"):
         optimizer = torch.optim.SGD(model.params(), lr=1e-3)
     else:
@@ -245,7 +245,8 @@ def main():
 
 
     U_Loss = MSE_Loss()
-    bi_train(model, label_loader, unlabel_loader, val_loader, test_loader, optimizer, U_Loss)
+    print("test_accuracy:",test(model, test_loader))
+#     bi_train(model, label_loader, unlabel_loader, val_loader, test_loader, optimizer, U_Loss)
 
 if __name__ == '__main__':
     main()

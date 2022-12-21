@@ -184,7 +184,7 @@ parser = argparse.ArgumentParser(description='manual to this script')
 #model
 parser.add_argument('--depth', type=int, default=28)
 parser.add_argument('--width', type=int, default=2)
-
+parser.add_argument('--model_name', type=str)
 
 #optimization
 parser.add_argument('--optim', default='adam')
@@ -338,7 +338,7 @@ def bi_train(model, label_loader, unlabeled_loader, val_loader, test_loader, opt
             optimizer.param_groups[0]['lr'] *= args.lr_decay_factor
     print("Last Model Accuracy: {}".format(test(model, test_loader)))
     print("Test Accuracy: {}".format(test_acc))
-
+    torch.save(model.state_dict(), args.model_name)
 args.meta_lr = 0.005
 def test(model, test_loader):
     with torch.no_grad():
